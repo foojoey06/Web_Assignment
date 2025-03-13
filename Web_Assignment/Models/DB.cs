@@ -8,6 +8,14 @@ public class DB : DbContext
     public DB(DbContextOptions options) : base(options) { }
 
     //DbSets
+    public DbSet<Category> Categories { get; set; }
+    public DbSet<Beverage> Beverages { get; set; }
+    public DbSet<Image> Images { get; set; }
+    public DbSet<OrderItem> OrderItems { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<Voucher> Vouchers { get; set; }
+    public DbSet<Staff> Staffs { get; set; }
+    public DbSet<Payment> Payments { get; set; }
 }
 
 //Entity Classes
@@ -20,7 +28,7 @@ public class Category
     [MaxLength(50)]
     public string Name { get; set; }
 
-    public List<Beverage> Beverages { get; set; }
+    public List<Beverage> Beverages { get; set; } = [];
 }
 
 public class Beverage
@@ -29,15 +37,16 @@ public class Beverage
     public int Id { get; set; }
     [MaxLength(50)]
     public string Name { get; set; }
-    [Range(1, 99.99)]
+    [Precision(4, 2)]
     public decimal Price { get; set; }
-    [Range(1, 999)]
     public int stock { get; set; }
 
-    public Category CategoryId { get; set; }
-    public List<Image> Images { get; set; }
-    public List<OrderItem> OrderItems { get; set; }
-    public List<Cart> Cart { get; set; }
+    //fk
+    public int CategoryId { get; set; }
+    //np
+    public Category Category { get; set; }
+    public List<Image> Images { get; set; } = [];
+    public List<OrderItem> OrderItems { get; set; } = [];
 }
 
 public class Image
@@ -46,7 +55,11 @@ public class Image
     public int Id { get; set; }
     [MaxLength(700)]
     public string Path { get; set; }
+
+    //fk
     public int BeverageId { get; set; }
+    //np
+    public Beverage Beverages { get; set; }
 }
 
 public class Voucher
@@ -55,18 +68,15 @@ public class Voucher
     public int Id { get; set; }
     [MaxLength(10)]
     public string Code { get; set; }
-    [Range(1,20)]
     public int Limit { get; set; }
-    [Required]
     public DateOnly ExpiryDate { get; set; }
-    [Required]
     public DateOnly ActivationDate { get; set; }
     [MaxLength(50)]
     public string Description { get; set; }
-    [Range(1, 99.99)]
+    [Precision(4, 2)]
     public decimal MinSpend { get; set; }
 
-    public List<Order> Orders { get; set; }
+    public List<Order> Orders { get; set; } = [];
 }
 
 public class Payment
@@ -77,12 +87,15 @@ public class Payment
     public string CustName { get; set; }
     [MaxLength(30)]
     public string CustEmail { get; set; }
-    [Range(1, 9999.99)]
+    [Precision(6, 2)]
     public decimal PaidAmount { get; set; }
     [MaxLength(10)]
     public string Method { get; set; }
 
-    public List<Order> Orders { get; set; }
+    //fk
+    public int OrderId { get; set; }
+
+    public Order Order { get; set; } 
 }
 
 public class Staff
@@ -103,8 +116,7 @@ public class Staff
     [MaxLength(700)]
     public string Path { get; set; }
 
-    public List<Order> Orders { get; set; }
-    public List<Cart> Carts { get; set; }
+    public List<Order> Orders { get; set; } = [];
 }
 public class OrderItem
 {
@@ -117,38 +129,35 @@ public class OrderItem
     [MaxLength(1)]
     public string Size { get; set; }
 
+    //fk
     public int BeverageId { get; set; }
     public int OrderId { get; set; }
+
+    //np
+    public Beverage Beverage { get; set; }
+    public Order Order { get; set; }
 }
 
 public class Order
 {
     [Key]
     public int Id { get; set; }
-    [Required]
+
     public DateOnly Date { get; set; }
-    [Required]
+
     public TimeOnly Time { get; set; }
-    [Range(1, 9999.99)]
-    public decimal amount { get; set; }
+    [Precision(6, 2)]
+    public decimal Amount { get; set; }
 
-    public Voucher VoucherId { get; set; }
-    public Staff StaffId { get; set; }
-    public Payment PaymentId { get; set; }
-    public List<OrderItem> OrderItems { get; set; }
+    //fk
+    public int VoucherId { get; set; }
+    public int StaffId { get; set; }
+    //public Payment PaymentId { get; set; }
+
+    //np
+    public List<OrderItem> OrderItems { get; set; } = [];
+    public Voucher Voucher { get; set; }
+    public Staff Staff { get; set; }
+    public Payment? Payment { get; set; }
 }
 
-public class Cart
-{
-    [Key]
-    public int Id { get; set; }
-    [MaxLength(10)]
-    public string SugarLevel { get; set; }
-    [MaxLength(4)]
-    public string Temperature { get; set; }
-    [MaxLength(1)]
-    public string Size { get; set; }
-
-    public Staff StaffId { get; set; }
-    public Beverage BeverageId { get; set; }
-}
