@@ -15,4 +15,19 @@ public class AdminController : Controller
     {
         return View();
     }
+
+    public IActionResult Category()
+    {
+        return View();
+
+    }
+    [HttpPost]
+    public IActionResult Category(CategoryVM vm)
+    {
+        if (ModelState.IsValid)
+        {
+
+        }
+        return RedirectToAction("Category");
+    }
 }
