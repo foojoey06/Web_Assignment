@@ -3,3 +3,19 @@
     ViewBag.Title = "Category";
     Layout = "../Shared/_ALayout";
 }
+
+<form method="post" class="form">
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <label asp-for="Name"></label>
+    <input asp-for="Name" autofocus>
+    <span asp-validation-for="Name"></span>
+
+    <section>
+        <button>Insert</button>
+        <button type="reset">Reset</button>
+    </section>
+
+    <div class="info">@Html.Raw(TempData["Info"])</div>
+</form>
+

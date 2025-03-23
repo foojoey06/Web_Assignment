@@ -26,8 +26,13 @@ public class AdminController : Controller
     {
         if (ModelState.IsValid)
         {
-
+            db.Categories.Add(new()
+            {
+                Name = vm.Name,
+            });
+            db.SaveChanges();
         }
+        TempData["Info"] = $"Category {vm.Name} inserted.";
         return RedirectToAction("Category");
     }
 }
