@@ -2,6 +2,7 @@
 @{
     ViewBag.Title = "Category";
     Layout = "../Shared/_ALayout";
+    IEnumerable<Category> categories = ViewBag.Categories;
 }
 
 <form method="post" class="form">
@@ -18,4 +19,28 @@
 
     <div class="info">@Html.Raw(TempData["Info"])</div>
 </form>
+
+<table class="table">
+<tr>
+    <th>Id</th>
+    <th>Name</th>
+    <th></th>
+</tr>
+
+<br>
+
+@foreach(var c in categories)
+{
+    <tr>
+        <td id="CatId">@c.Id</td>
+        <td>@c.Name</td>
+        <td>
+            <button data-post="/Admin/UpdateCat/@c.Id">Update</button>
+            <button data-post="/Admin/DeleteCat/@c.Id">Delete</button>
+        </td>
+    </tr>
+    <br>
+}
+</table>
+
 
