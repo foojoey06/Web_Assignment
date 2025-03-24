@@ -1,4 +1,11 @@
-﻿@{
-    ViewBag.Title = "Admin Intranet";
+﻿@model StaffVM
+@{
+    ViewBag.Title = "Staff List";
     Layout = "../Shared/_ALayout";
+    IEnumerable<Staff> staffs = ViewBag.Staff;
 }
+
+<section>
+    <button><a href="/Admin/Staff">Register Staff</a></button>
+</section>
+

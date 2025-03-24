@@ -17,56 +17,30 @@ public class AdminController : Controller
         return View();
     }
 
-    public IActionResult Category()
+   public IActionResult Staff()
     {
-        ViewBag.Categories = db.Categories;
+        ViewBag.Staffs = db.Staffs;
         return View();
     }
 
     [HttpPost]
-    public IActionResult Category(CategoryVM vm)
+    public IActionResult Index(StaffVM vm)
     {
         if (ModelState.IsValid)
         {
-            db.Categories.Add(new()
+            db.Staffs.Add(new()
             {
                 Name = vm.Name,
+                Role = vm.Role,
+                Password = vm.Password,
+                Status = "Active",
+                Email = vm.Email,
+                Otp = 1, //TO DO
+                Path = "Placeholder", //TO DO
             });
-            db.SaveChanges();
+            //db.SaveChanges();
+            //TempData["Info"] = $"Staff {vm.Name} inserted.";
         }
-        TempData["Info"] = $"Category {vm.Name} inserted.";
-        return RedirectToAction("Category");
-    }
-
-    [HttpPost]
-    public ActionResult DeleteCat(int? id)
-    {
-        var i = db.Categories.Find(id);
-
-        if(i != null)
-        {
-            db.Categories.Remove(i);
-            db.SaveChanges();
-            TempData["Info"] = $"Category {i.Name} deleted.";
-        }
-        return RedirectToAction("Category");
-    }
-
-    [HttpPost]
-    public ActionResult UpdateCat(int? id, string? name)
-    {
-        
-        var i = db.Categories.Find(id);
-
-        if(i != null)
-        {
-            db.Categories
-              .ExecuteUpdate(s => s
-              .SetProperty(i => i.Name, name)
-              );
-            db.SaveChanges();
-            TempData["Info"] = $"Category Name {i.Name} updated.";
-        }
-        return RedirectToAction("Category");
+        return RedirectToAction("Index");
     }
 }

@@ -21,26 +21,24 @@
 </form>
 
 <table class="table">
-<tr>
-    <th>Id</th>
-    <th>Name</th>
-    <th></th>
-</tr>
-
-<br>
-
-@foreach(var c in categories)
-{
     <tr>
-        <td id="CatId">@c.Id</td>
-        <td>@c.Name</td>
-        <td>
-            <button data-post="/Admin/UpdateCat/@c.Id">Update</button>
-            <button data-post="/Admin/DeleteCat/@c.Id">Delete</button>
-        </td>
+        <th>Id</th>
+        <th>Name</th>
+        <th></th>
     </tr>
+
     <br>
-}
+
+    @foreach (var c in categories)
+    {
+        <tr>
+            <td id="CatId">@c.Id</td>
+            <td>@c.Name</td>
+            <td>
+                <button data-post="/Category/Update/@c.Id">Update</button>
+                <button data-post="/Category/Delete/@c.Id">Delete</button>
+            </td>
+        </tr>
+        <br>
+    }
 </table>
-
-

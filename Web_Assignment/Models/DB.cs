@@ -95,6 +95,7 @@ public class Payment
     //fk
     public int OrderId { get; set; }
 
+    //np
     public Order Order { get; set; } 
 }
 
