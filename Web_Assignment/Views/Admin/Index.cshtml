@@ -2,10 +2,41 @@
 @{
     ViewBag.Title = "Staff List";
     Layout = "../Shared/_ALayout";
-    IEnumerable<Staff> staffs = ViewBag.Staff;
+    IEnumerable<Staff> staffs = ViewBag.Staffs;
 }
 
 <section>
     <button><a href="/Admin/Staff">Register Staff</a></button>
 </section>
+
+<table class="table">
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Role</th>
+        <th>Email</th>
+        <th>Status</th>
+        <th>Photo</th>
+        <th></th>
+    </tr>
+
+    <br>
+
+    @foreach (var s in staffs)
+    {
+        <tr>
+            <td id="StaffId">@s.Id</td>
+            <td>@s.Name</td>
+            <td>@s.Role</td>
+            <td>@s.Email</td>
+            <td>@s.Status</td>
+            <td><img id="profile-photo" src="@s.Path"></td>
+            <td>
+                <button>Update</button>
+                <button>Delete</button>
+            </td>
+        </tr>
+        <br>
+    }
+</table>
 

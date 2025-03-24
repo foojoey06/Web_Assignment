@@ -1,33 +1,45 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Web_Assignment.Controllers;
 
 public class AdminController : Controller
 {
+    private readonly IWebHostEnvironment en;
     private readonly DB db;
+    private readonly Helper hp;
 
-    public AdminController(DB db)
+    public AdminController(IWebHostEnvironment en, DB db, Helper hp)
     {
         this.db = db;
+        this.en = en;
+        this.hp = hp;
     }
 
     public IActionResult Index()
-    {
-        return View();
-    }
-
-   public IActionResult Staff()
     {
         ViewBag.Staffs = db.Staffs;
         return View();
     }
 
-    [HttpPost]
-    public IActionResult Index(StaffVM vm)
+   public IActionResult Staff()
     {
+        return View();
+    }
+
+    [HttpPost]
+    public IActionResult Staff(StaffVM vm, IFormFile photo)
+    {
+        //Validate Photo Only
         if (ModelState.IsValid)
         {
+            var e = hp.ValidatePhoto(photo);
+            if (e != "") ModelState.AddModelError("photo", e);
+        }
+        if (ModelState.IsValid)
+        {
+           
             db.Staffs.Add(new()
             {
                 Name = vm.Name,
@@ -36,11 +48,11 @@ public class AdminController : Controller
                 Status = "Active",
                 Email = vm.Email,
                 Otp = 1, //TO DO
-                Path = "Placeholder", //TO DO
+                Path = hp.SavePhoto(photo, "staff"),
             });
-            //db.SaveChanges();
-            //TempData["Info"] = $"Staff {vm.Name} inserted.";
+            db.SaveChanges();
+            TempData["Info"] = $"Staff {vm.Name} inserted.";
         }
-        return RedirectToAction("Index");
+        return RedirectToAction("Staff");
     }
 }

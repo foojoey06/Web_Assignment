@@ -271,3 +271,16 @@ label > * {
     min-width: 30px;
     text-align: center;
 }
+
+/* Text in Buttons ----------------------------------------------------------- */
+
+button > a{
+    text-decoration:none;
+    color: black;
+}
+
+/* Profile Photos ----------------------------------------------------------- */
+#profile-photo{
+    length:90px;
+    width:90px;
+}
