@@ -62,3 +62,25 @@ public class StaffUpdateVM
     public string? PhotoURL { get; set; }
     public IFormFile? Path { get; set; }
 }
+
+public class RegisterVM
+{
+    [Required]
+    [MaxLength(50)]
+    public string Name { get; set; }
+
+    [Required]
+    [MaxLength(8)]
+    [RegularExpression(@"^(?=.*[\W_])[a-zA-Z0-9\W_]{8}$", ErrorMessage = "Password Incorrect Format.")]
+    public string Password { get; set; }
+
+    [Required]
+    [MaxLength(8)]
+    [Compare("Password", ErrorMessage = "Passwords do not match.")]
+    public string ConfirmPassword { get; set; }
+
+    [Required]
+    [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Invalid Email Format.")]
+    [Remote("CheckEmail", "Admin", ErrorMessage = "Email already Registered.")]
+    public string Email { get; set; }
+}
