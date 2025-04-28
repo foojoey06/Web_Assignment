@@ -1,0 +1,24 @@
+﻿@model CategoryVM
+@{
+    Layout = "../Shared/_ALayout";
+    ViewBag.Title = "Update Category";
+}
+
+<form method="post" class="form">
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <label asp-for="Id"></label>
+    <b>@Model?.Id</b>
+    <br>
+
+    <label asp-for="Name"></label>
+    <input asp-for="Name" autofocus>
+    <span asp-validation-for="Name"></span>
+
+    <section>
+        <button>Update</button>
+        <button type="reset">Reset</button>
+    </section>
+
+    <div class="info">@Html.Raw(TempData["Info"])</div>
+</form>

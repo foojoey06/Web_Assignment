@@ -23,10 +23,15 @@ public class CategoryController : Controller
         return View();
     }
 
+    public bool checkCategory(string Name)
+    {
+        return !db.Categories.Any(s => s.Name == Name);
+    }
+
     [HttpPost]
     public IActionResult Category(CategoryVM vm)
     {
-        if (ModelState.IsValid) //@TO DO <- kennot duplicate category name
+        if (ModelState.IsValid) 
         {
             db.Categories.Add(new()
             {
@@ -52,18 +57,33 @@ public class CategoryController : Controller
         return RedirectToAction("Category");
     }
 
+    public IActionResult CategoryUpdate(int? id)
+    {
+        var p = db.Categories.Find(id);
+
+        if(p == null)
+        {
+            return RedirectToAction("Category");
+        }
+
+        var vm = new CategoryVM
+        {
+            Id = p.Id,
+            Name = p.Name
+        };
+
+        return View(vm);
+    }
+
     [HttpPost]
-    public ActionResult Update(int? id, string? name)
+    public IActionResult CategoryUpdate(CategoryVM vm)
     {
 
-        var i = db.Categories.Find(id);
+        var i = db.Categories.Find(vm.Id);
 
         if (i != null)
         {
-            db.Categories
-              .ExecuteUpdate(s => s
-              .SetProperty(i => i.Name, name)
-              );
+            i.Name = vm.Name;
             db.SaveChanges();
             TempData["Info"] = $"Category Name {i.Name} updated.";
         }
