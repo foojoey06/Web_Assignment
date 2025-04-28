@@ -107,7 +107,7 @@ public class Staff
     public string Name { get; set; }
     [MaxLength(20)]
     public string Role { get; set; }
-    [MaxLength(8)]
+    [MaxLength(100)]
     public string Password { get; set; }
     [MaxLength(15)]
     public string Status { get; set; }
@@ -160,5 +160,16 @@ public class Order
     public Voucher Voucher { get; set; }
     public Staff Staff { get; set; }
     public Payment? Payment { get; set; }
+}
+
+public class Admin : Staff
+{
+
+}
+
+public class Cashier : Staff
+{
+    [MaxLength(100)]
+    public string Path { get; set; }
 }
 

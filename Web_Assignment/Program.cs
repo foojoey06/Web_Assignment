@@ -7,6 +7,8 @@ builder.Services.AddSqlServer<DB>($@"
     AttachDbFileName = {builder.Environment.ContentRootPath}\DB.mdf;
 ");
 builder.Services.AddScoped<Helper>();
+builder.Services.AddAuthentication().AddCookie();
+builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 app.UseHttpsRedirection();
 app.UseStaticFiles();

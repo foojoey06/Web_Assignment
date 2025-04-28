@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Web_Assignment.Controllers
 {
@@ -15,11 +17,13 @@ namespace Web_Assignment.Controllers
             this.db = db;
         }
 
+        [Authorize(Roles = "Cashier")]
         public IActionResult Register()
         {
             return View();
         }
 
+        [Authorize(Roles = "Cashier")]
         [HttpPost]
         public IActionResult Register(RegisterVM vm, IFormFile photo)
         {
@@ -28,6 +32,7 @@ namespace Web_Assignment.Controllers
             {
                 var e = hp.ValidatePhoto(photo);
                 if (e != "") ModelState.AddModelError("photo", e);
+                TempData["Info"] = e;
             }
 
             if (ModelState.IsValid)
@@ -36,7 +41,8 @@ namespace Web_Assignment.Controllers
                 db.Staffs.Add(new()
                 {
                     Name = vm.Name,
-                    Password = vm.Password,
+                    Password = hp.HashPassword(vm.Password),
+                    Role = "Cashier",
                     Status = "Active",
                     Email = vm.Email,
                     Otp = 1, //TO DO

@@ -15,9 +15,38 @@ namespace Web_Assignment.Controllers
             this.hp = hp;
         }
 
+        // GET: Account/Login
         public IActionResult Login()
         {
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult Login(LoginVM vm, string? returnURL)
+        {
+            //Get User record based on email
+            var user = db.Staffs.FirstOrDefault(user => user.Email == vm.Email);
+
+            //Verify Password
+            if(user == null || !hp.VerifyPassword(user.Password, vm.Password))
+            {
+                ModelState.AddModelError("", "Incorrect Login Credentials.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                TempData["Info"] = "Login Successfully.";
+
+                //Sign in
+                hp.SignIn(user!.Email, user.Role, vm.RememberMe);
+
+                //Handle Return URL
+                if (string.IsNullOrEmpty(returnURL))
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+            return View(vm);
         }
     }
 }

@@ -63,6 +63,8 @@ public class StaffUpdateVM
     public IFormFile? Path { get; set; }
 }
 
+
+//Member View Model
 public class RegisterVM
 {
     [Required]
@@ -83,4 +85,18 @@ public class RegisterVM
     [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Invalid Email Format.")]
     [Remote("CheckEmail", "Admin", ErrorMessage = "Email already Registered.")]
     public string Email { get; set; }
+}
+
+//Login VM
+public class LoginVM
+{
+    [StringLength(100)]
+    [EmailAddress]
+    public string Email { get; set; }
+
+    [StringLength(100, MinimumLength = 5)]
+    [DataType(DataType.Password)]
+    public string Password { get; set; }
+
+    public bool RememberMe { get; set; }
 }

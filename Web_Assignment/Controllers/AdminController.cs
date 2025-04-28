@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace Web_Assignment.Controllers;
 
@@ -19,23 +21,27 @@ public class AdminController : Controller
         this.hp = hp;
     }
 
+    [Authorize(Roles = "Admin")]
     public IActionResult Index()
     {
         ViewBag.Staffs = db.Staffs;
         return View();
     }
 
-   public IActionResult StaffAdd()
+    [Authorize(Roles = "Admin")]
+    public IActionResult StaffAdd()
     {
         return View();
     }
 
+    [Authorize(Roles = "Admin")]
     //validate Emails in View Model
     public bool CheckEmail(string email)
     {
         return !db.Staffs.Any(s => s.Email == email);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public IActionResult StaffAdd(StaffVM vm, IFormFile photo)
     {
@@ -53,7 +59,7 @@ public class AdminController : Controller
             {
                 Name = vm.Name,
                 Role = vm.Role,
-                Password = vm.Password,
+                Password = hp.HashPassword(vm.Password),
                 Status = "Active",
                 Email = vm.Email,
                 Otp = 1, //TO DO
@@ -65,6 +71,7 @@ public class AdminController : Controller
         return RedirectToAction("StaffAdd");
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public IActionResult StaffDelete(int? id)
     {
@@ -83,6 +90,7 @@ public class AdminController : Controller
         return RedirectToAction("Index");
     }
 
+    [Authorize(Roles = "Admin")]
     public IActionResult StaffUpdate(int? id)
     {
         var p = db.Staffs.Find(id);
@@ -105,6 +113,7 @@ public class AdminController : Controller
         return View(vm);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public IActionResult StaffUpdate(StaffUpdateVM vm)
     {

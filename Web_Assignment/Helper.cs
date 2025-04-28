@@ -1,11 +1,14 @@
 ﻿using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Web_Assignment;
 
 // TODO
-public class Helper(IWebHostEnvironment en)
+public class Helper(IWebHostEnvironment en, IHttpContextAccessor ct)
 {
     // ------------------------------------------------------------------------
     // Photo Upload
@@ -51,5 +54,66 @@ public class Helper(IWebHostEnvironment en)
         file = Path.GetFileName(file);
         var path = Path.Combine(en.WebRootPath, folder, file);
         File.Delete(path);
+    }
+
+    // ------------------------------------------------------------------------
+    // Security Helper Functions
+    // ------------------------------------------------------------------------
+
+    private readonly PasswordHasher<object> ph = new();
+
+    public string HashPassword(string password)
+    {
+        return ph.HashPassword(0, password);
+    }
+
+    public bool VerifyPassword(string hash, string password)
+    {
+        return ph.VerifyHashedPassword(0, hash, password)
+               == PasswordVerificationResult.Success;
+    }
+
+    public void SignIn(string email, string role, bool rememberMe)
+    {
+        // (1) Claim, identity and principal
+        List<Claim> claims =
+        [
+            new(ClaimTypes.Name, email),
+            new(ClaimTypes.Role, role),
+        ];
+
+        ClaimsIdentity identity = new(claims, "Cookies");
+
+        ClaimsPrincipal principal = new(identity);
+
+        // (2) Remember me (authentication properties)
+        AuthenticationProperties properties = new()
+        {
+            IsPersistent = rememberMe,
+        };
+
+        // (3) Sign in
+        ct.HttpContext!.SignInAsync(principal, properties);
+    }
+
+    public void SignOut()
+    {
+        // Sign out
+        ct.HttpContext!.SignOutAsync();
+    }
+
+    public string RandomPassword()
+    {
+        string s = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        string password = "";
+
+        Random r = new();
+
+        for (int i = 1; i <= 10; i++)
+        {
+            password += s[r.Next(s.Length)];
+        }
+
+        return password;
     }
 }
