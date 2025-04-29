@@ -1,13 +1,12 @@
-﻿@model StaffVM
-@{
-    ViewBag.Title = "Staff List";
+﻿@{
+    ViewBag.Title = "Cashier List";
     Layout = "../Shared/_ALayout";
     IEnumerable<Staff> staffs = ViewBag.Staffs;
-    IEnumerable<Staff> admins = staffs.Where(s => s.Role == "Admin");
+    IEnumerable<Staff> cashiers = staffs.Where(s => s.Role == "Cashier");
 }
 
 <section>
-    <button><a href="/Admin/StaffAdd">Register Staff</a></button>
+    <button><a href="/Member/MemberAdd">Register Cashier</a></button>
 </section>
 
 <table class="table">
@@ -23,7 +22,7 @@
 
     <br>
 
-    @foreach (var s in admins)
+    @foreach (var s in cashiers)
     {
         <tr>
             <td id="StaffId">@s.Id</td>
@@ -33,11 +32,10 @@
             <td>@s.Status</td>
             <td><img id="profile-photo" src="@s.Path"></td>
             <td>
-                <button data-get="/Admin/StaffUpdate/@s.Id">Update</button>
-                <button data-post="/Admin/StaffDelete/@s.Id?@s.Name">Delete</button>
+                <button data-get="/Member/MemberUpdate/@s.Id">Update</button>
+                <button data-post="/Member/MemberDelete/@s.Id">Delete</button>
             </td>
         </tr>
         <br>
     }
 </table>
-

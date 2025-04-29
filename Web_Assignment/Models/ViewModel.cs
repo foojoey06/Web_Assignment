@@ -19,11 +19,6 @@ public class StaffVM
     [Required]
     [MaxLength(50)]
     public string Name { get; set; }
-
-    [Required]
-    [MaxLength(20)]
-    [RegularExpression("^(Cashier|Admin)$", ErrorMessage = "Role must be 'Cashier' or 'Admin' only.")]
-    public string Role { get; set; }
     
     [Required]
     [MaxLength(8)]
@@ -65,7 +60,7 @@ public class StaffUpdateVM
 
 
 //Member View Model
-public class RegisterVM
+public class MemberVM
 {
     [Required]
     [MaxLength(50)]
@@ -85,6 +80,23 @@ public class RegisterVM
     [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Invalid Email Format.")]
     [Remote("CheckEmail", "Admin", ErrorMessage = "Email already Registered.")]
     public string Email { get; set; }
+}
+
+public class MemberUpdateVM
+{
+    public int Id { get; set; }
+
+    //[Required]
+    [MaxLength(50)]
+    public string Name { get; set; }
+
+    [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Invalid Email Format.")]
+    [Remote("CheckEmail", "Admin", ErrorMessage = "Email already Registered.")]
+    public string Email { get; set; }
+
+    //Other Properties
+    public string? PhotoURL { get; set; }
+    public IFormFile? Path { get; set; }
 }
 
 //Login VM

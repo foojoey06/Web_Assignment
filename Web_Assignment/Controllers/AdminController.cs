@@ -58,7 +58,7 @@ public class AdminController : Controller
             db.Staffs.Add(new()
             {
                 Name = vm.Name,
-                Role = vm.Role,
+                Role = "Admin",
                 Password = hp.HashPassword(vm.Password),
                 Status = "Active",
                 Email = vm.Email,
