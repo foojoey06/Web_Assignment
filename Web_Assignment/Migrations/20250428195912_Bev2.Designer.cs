@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Web_Assignment.Models;
 
@@ -11,9 +12,11 @@ using Web_Assignment.Models;
 namespace Web_Assignment.Migrations
 {
     [DbContext(typeof(DB))]
-    partial class DBModelSnapshot : ModelSnapshot
+    [Migration("20250428195912_Bev2")]
+    partial class Bev2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,18 +111,18 @@ namespace Web_Assignment.Migrations
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
-                    b.Property<int>("StaffId")
-                        .HasColumnType("int");
-
                     b.Property<TimeOnly>("Time")
                         .HasColumnType("time");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.Property<int>("VoucherId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StaffId");
+                    b.HasIndex("UserId");
 
                     b.HasIndex("VoucherId");
 
@@ -202,7 +205,7 @@ namespace Web_Assignment.Migrations
                     b.ToTable("Payments");
                 });
 
-            modelBuilder.Entity("Web_Assignment.Models.Staff", b =>
+            modelBuilder.Entity("Web_Assignment.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -225,8 +228,8 @@ namespace Web_Assignment.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
 
                     b.Property<string>("Path")
                         .IsRequired()
@@ -245,7 +248,7 @@ namespace Web_Assignment.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Staffs");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Web_Assignment.Models.Voucher", b =>
@@ -308,9 +311,9 @@ namespace Web_Assignment.Migrations
 
             modelBuilder.Entity("Web_Assignment.Models.Order", b =>
                 {
-                    b.HasOne("Web_Assignment.Models.Staff", "Staff")
+                    b.HasOne("Web_Assignment.Models.User", "User")
                         .WithMany("Orders")
-                        .HasForeignKey("StaffId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -320,7 +323,7 @@ namespace Web_Assignment.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Staff");
+                    b.Navigation("User");
 
                     b.Navigation("Voucher");
                 });
@@ -374,7 +377,7 @@ namespace Web_Assignment.Migrations
                     b.Navigation("Payment");
                 });
 
-            modelBuilder.Entity("Web_Assignment.Models.Staff", b =>
+            modelBuilder.Entity("Web_Assignment.Models.User", b =>
                 {
                     b.Navigation("Orders");
                 });

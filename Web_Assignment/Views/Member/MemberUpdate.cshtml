@@ -1,0 +1,36 @@
+﻿@model MemberUpdateVM
+@{
+    Layout = "../Shared/_ALayout";
+    ViewBag.Title = "Update Cashier";
+}
+
+<form method="post" class="form" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <label asp-for="Id"></label>
+    <b>@Model?.Id</b>
+    <br>
+
+    <label asp-for="Name"></label>
+    <input asp-for="Name" readonly>
+    <span asp-validation-for="Name"></span>
+
+    <label asp-for="Email"></label>
+    <input asp-for="Email" autofocus>
+    <span asp-validation-for="Email"></span>
+
+    <label asp-for="Path"></label>
+    <label class="upload">
+        <input asp-for="Path" accept="image/jpeg,image/png" hidden>
+        <img src="@Model.PhotoURL">
+    </label>
+    <span asp-validation-for="Path"></span>
+    @Html.ValidationMessage("photo")
+
+    <section>
+        <button>Update</button>
+        <button type="reset">Reset</button>
+    </section>
+
+    <div class="info">@Html.Raw(TempData["Info"])</div>
+</form>

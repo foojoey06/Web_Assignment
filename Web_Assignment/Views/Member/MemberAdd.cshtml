@@ -1,0 +1,39 @@
+﻿@model MemberVM;
+@{
+    ViewBag.Title = "Register Account";
+    Layout = "../Shared/_ALayout";
+}
+
+<form method="post" class="form" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <label asp-for="Name"></label>
+    <input asp-for="Name" autofocus>
+    <span asp-validation-for="Name"></span>
+
+    <label asp-for="Email"></label>
+    <input asp-for="Email" autofocus>
+    <span asp-validation-for="Email"></span>
+
+    <label asp-for="Password"></label>
+    <input asp-for="Password" type="password" autofocus>
+    <span asp-validation-for="Password"></span>
+
+    <label asp-for="ConfirmPassword"></label>
+    <input asp-for="ConfirmPassword" type="password" autofocus>
+    <span asp-validation-for="ConfirmPassword"></span>
+
+    <label>Photo</label>
+    <label class="upload">
+        <input type="file" name="photo" accept="image/jpeg,image/png" hidden>
+        <img src="/images/photo.jpg" />
+    </label>
+    @Html.ValidationMessage("photo")
+
+    <section>
+        <button>Register</button>
+        <button type="reset">Reset</button>
+    </section>
+
+    <div class="info">@Html.Raw(TempData["Info"])</div>
+</form>

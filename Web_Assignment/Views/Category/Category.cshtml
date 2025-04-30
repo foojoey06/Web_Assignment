@@ -1,0 +1,44 @@
+﻿@model CategoryVM
+@{
+    ViewBag.Title = "Category";
+    Layout = "../Shared/_ALayout";
+    IEnumerable<Category> categories = ViewBag.Categories;
+}
+
+<form method="post" class="form">
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <label asp-for="Name"></label>
+    <input asp-for="Name" autofocus>
+    <span asp-validation-for="Name"></span>
+
+    <section>
+        <button>Insert</button>
+        <button type="reset">Reset</button>
+    </section>
+
+    <div class="info">@Html.Raw(TempData["Info"])</div>
+</form>
+
+<table class="table">
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th></th>
+    </tr>
+
+    <br>
+
+    @foreach (var c in categories)
+    {
+        <tr>
+            <td id="CatId">@c.Id</td>
+            <td>@c.Name</td>
+            <td>
+                <button data-get="/Category/CategoryUpdate/@c.Id">Update</button>
+                <button data-post="/Category/Delete/@c.Id">Delete</button>
+            </td>
+        </tr>
+        <br>
+    }
+</table>
