@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@inject DB db
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -6,19 +8,57 @@
     <title>@ViewBag.Title</title>
     <link rel="shortcut icon" href="/images/favicon.png">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <link rel="stylesheet" href="/css/pager.css">
     <link rel="stylesheet" href="/css/app.css" asp-append-version="true">
     @RenderSection("head", false)
 </head>
 <body>
+    <div class="info">@Html.Raw(TempData["Info"])</div>
+
     <header>
-        <h1><a href="/">Database SELECT</a></h1>
+        <h1><a href="/">Shop</a></h1>
+
+        @* User email and role *@
+        @if (User.Identity!.IsAuthenticated)
+        {
+            <div>
+                @User.Identity.Name |
+                @(User.IsInRole("Admin") ? "Admin" : "")
+                @(User.IsInRole("Member") ? "Member" : "")
+            </div>
+        }
+
+        @* Member photo *@
+        @if (User.IsInRole("Cashier"))
+        {
+            var email = User.Identity!.Name;
+            var photoURL = db.Staffs.FirstOrDefault(s => s.Email == email)?.Path;
+
+            if (!string.IsNullOrEmpty(photoURL))
+            {
+                <img src="/member/@photoURL" id="profile-photo" />
+            }
+        }
     </header>
 
     <nav>
         <a href="/">Index</a>
-        <a href="/Home/Detail">Detail</a>
-        <a href="/Account/Login?ReturnURL=/Account/Login">Login</a>
-        <div></div>
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <a href="/Account/Logout">Logout</a>
+            <a href="/Account/UpdatePassword">Update Password</a>
+        }
+        else
+        {
+            <a href="/Account/Login">Login</a>
+            <a href="/Account/Register">Register</a>
+            <a href="/Account/ResetPassword">Forget Password</a>
+        }
+        @if (User.IsInRole("Cashier"))
+        {
+            <a href="/Account/UpdateProfile">Update Profile</a>
+        }
     </nav>
 
     <main>
