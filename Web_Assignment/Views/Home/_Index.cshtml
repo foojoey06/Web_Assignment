@@ -1,0 +1,42 @@
+﻿@model IEnumerable<Bev>
+
+@{
+    Dictionary<int, int> cart = ViewBag.Cart;
+}
+
+<div class="products">
+    @foreach (var p in Model)
+    {
+        <div class="product">
+            <img src="/Beverage/@(p.PhotoURL)" alt="@p.Name" />
+            <div>@p.Id - @p.Name - RM @p.Price</div>
+
+            @if (cart.ContainsKey(p.Id))
+            {
+                <!-- ✅ Already in Cart: show dropdown to update -->
+                <form data-ajax="true"
+                      data-ajax-update="#target"
+                      method="post"
+                      action="/Home/UpdateCart">
+                    @{
+                        int quantity = cart[p.Id];
+                        var list = new SelectList(Enumerable.Range(1, 10), quantity);
+                    }
+                    @Html.Hidden("ProductId", p.Id)
+                    <span>✅ In Cart</span>
+                </form>
+            }
+            else
+            {
+                <form data-ajax="true"
+                      data-ajax-update="#target"
+                      method="post"
+                      action="/Home/UpdateCart">
+                    @Html.Hidden("ProductId", p.Id)
+                    @Html.Hidden("Quantity", 1)
+                    <button type="submit">Add to Cart</button>
+                </form>
+            }
+        </div>
+    }
+</div>
