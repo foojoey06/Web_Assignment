@@ -3,8 +3,15 @@
     ViewBag.Title = "Staff List";
     Layout = "../Shared/_ALayout";
     IEnumerable<Staff> staffs = ViewBag.Staffs;
-    IEnumerable<Staff> admins = staffs.Where(s => s.Role == "Admin");
+    string[] fields = ["Id", "Name", "Role", "Email", "Status", "Photo"];
+
 }
+
+<form>
+    @Html.TextBox("name", "",
+                  new { type = "search", autofocus = "", data_trim = "" })
+    <button>Search</button>
+</form>
 
 <section>
     <button><a href="/Admin/StaffAdd">Register Staff</a></button>
@@ -12,18 +19,24 @@
 
 <table class="table">
     <tr>
-        <th>Id</th>
-        <th>Name</th>
-        <th>Role</th>
-        <th>Email</th>
-        <th>Status</th>
-        <th>Photo</th>
-        <th></th>
+        @foreach (var f in fields)
+        {
+            string d = "asc";
+            string c = "";
+
+            if (f == ViewBag.Sort)
+            {
+                d = ViewBag.Dir == "des" ? "asc" : "des";
+                c = ViewBag.Dir;
+            }
+
+            <th>
+                <a href="?sort=@f&dir=@d" class="@c">@f</a>
+            </th>
+        }
     </tr>
 
-    <br>
-
-    @foreach (var s in admins)
+    @foreach (var s in staffs)
     {
         <tr>
             <td id="StaffId">@s.Id</td>

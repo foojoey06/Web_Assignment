@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Server.HttpSys;
 
 namespace Web_Assignment.Controllers;
 
@@ -22,10 +23,34 @@ public class AdminController : Controller
     }
 
     [Authorize(Roles = "Admin")]
-    public IActionResult Index()
+    public IActionResult Index(string? name, string? sort, string? dir)
     {
-        ViewBag.Staffs = db.Staffs;
+
+        //Searching--------------------------------------
+        name = name?.Trim() ?? "";
+
+        var searched = db.Staffs
+                         .Where(s => s.Name.Contains(name))
+                         .Where(s => s.Role == "Admin");
+
+        //Sorting----------------------------------------
+        ViewBag.Sort = sort;
+        ViewBag.Dir = dir;
+
+        Func<Staff, object> fn = sort switch
+        {
+            "Id"    => s => s.Id,
+            "Name"  => s => s.Name,
+            "Email" => s => s.Email,
+            _       => s => s.Id,
+        };
+
+        ViewBag.staffs = dir == "des" ?
+                     searched.OrderByDescending(fn) :
+                     searched.OrderBy(fn);
+
         return View();
+
     }
 
     [Authorize(Roles = "Admin")]
