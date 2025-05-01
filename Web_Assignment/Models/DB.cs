@@ -13,7 +13,6 @@ public class DB : DbContext
     public DbSet<Image> Images { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<Order> Orders { get; set; }
-    public DbSet<Voucher> Vouchers { get; set; }
     public DbSet<Staff> Staffs { get; set; }
     public DbSet<Payment> Payments { get; set; }
 }
@@ -60,23 +59,6 @@ public class Image
     public int BeverageId { get; set; }
     //np
     public Beverage Beverages { get; set; }
-}
-
-public class Voucher
-{
-    [Key]
-    public int Id { get; set; }
-    [MaxLength(10)]
-    public string Code { get; set; }
-    public int Limit { get; set; }
-    public DateOnly ExpiryDate { get; set; }
-    public DateOnly ActivationDate { get; set; }
-    [MaxLength(50)]
-    public string Description { get; set; }
-    [Precision(4, 2)]
-    public decimal MinSpend { get; set; }
-
-    public List<Order> Orders { get; set; } = [];
 }
 
 public class Payment
@@ -150,14 +132,11 @@ public class Order
     [Precision(6, 2)]
     public decimal Amount { get; set; }
 
-    //fk
-    public int VoucherId { get; set; }
     public int StaffId { get; set; }
     //public Payment PaymentId { get; set; }
 
     //np
     public List<OrderItem> OrderItems { get; set; } = [];
-    public Voucher Voucher { get; set; }
     public Staff Staff { get; set; }
     public Payment? Payment { get; set; }
 }

@@ -1,0 +1,117 @@
+﻿@model IEnumerable<CartItem>
+
+<div class="cart-container">
+    <table class="table">
+        <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+        </tr>
+
+        @foreach (CartItem i in Model)
+        {
+            <tr>
+                <td>
+                    <img src="/Beverage/@i.Beverage.PhotoURL" style="width: 60px; height: auto;">
+                    @i.Beverage.Id - @i.Beverage.Name
+                </td>
+                <td>RM @i.Beverage.Price</td>
+                <td>
+                    <form method="post" action="/Home/UpdateCart" class="quantity-form">
+                        <input type="hidden" name="ProductId" value="@i.Beverage.Id" />
+
+                        <button type="button" class="decrement">−</button>
+                        <input type="number" name="Quantity" value="@i.Quantity" min="1" max="100" class="qty-input" />
+                        <button type="button" class="increment">+</button>
+                        <button type="button" class="btn btn-danger remove-cart-item" data-product-id="@i.Beverage.Id">Remove</button>
+                    </form>
+                </td>
+                <td>RM @i.Subtotal.ToString("0.00")</td>
+            </tr>
+        }
+
+        <tr>
+            <td colspan="2"></td>
+            <td class="bold">@Model.Sum(i => i.Quantity)</td>
+            <td class="bold">RM @Model.Sum(i => i.Subtotal).ToString("0.00")</td>
+        </tr>
+    </table>
+</div>
+
+<p style="color: red">
+    Minimum Order Amount = <b>RM 2.00</b>
+</p>
+
+@{
+    var total = Model.Sum(i => i.Subtotal);
+    var disabled = Model.Count() == 0 || !User.IsInRole("Member") || total < 2;
+}
+
+<button data-post="/Product/Checkout" disabled="@disabled">Checkout</button>
+
+@if (!User.IsInRole("Member"))
+{
+    <p>
+        <a href="/Account/Login?returnURL=/Product/ShoppingCart">Login</a>
+        with member account to proceed checkout
+    </p>
+}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Event listeners for quantity buttons (Increment and Decrement)
+        document.querySelectorAll(".quantity-form").forEach(form => {
+            const input = form.querySelector(".qty-input");
+            const incrementBtn = form.querySelector(".increment");
+            const decrementBtn = form.querySelector(".decrement");
+
+            incrementBtn.addEventListener("click", () => {
+                if (input.value < 100) {
+                    input.value = parseInt(input.value) + 1;
+                    form.submit();
+                }
+            });
+
+            decrementBtn.addEventListener("click", () => {
+                if (input.value > 1) {
+                    input.value = parseInt(input.value) - 1;
+                    form.submit();
+                }
+            });
+
+            input.addEventListener("change", () => {
+                let value = parseInt(input.value);
+                if (isNaN(value) || value < 1) value = 1;
+                if (value > 100) value = 100;
+                input.value = value;
+                form.submit();
+            });
+        });
+
+        // Handle remove cart item button click
+        document.querySelectorAll(".remove-cart-item").forEach(button => {
+            button.addEventListener("click", function() {
+                const productId = this.getAttribute("data-product-id");
+
+                // Send an AJAX POST request to remove the item from the cart
+                fetch("/Home/RemoveCart", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: `ProductId=${productId}`
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Refresh the page after removing the item
+                        window.location.reload();  // This will reload the current page
+                    } else {
+                        console.error('Error removing item from cart');
+                    }
+                })
+                .catch(error => console.error('Error removing item from cart:', error));
+            });
+        });
+    });
+</script>
