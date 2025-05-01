@@ -167,3 +167,18 @@ public class ResetPasswordVM
     [EmailAddress]
     public string Email { get; set; }
 }
+
+public class Bev 
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+    public string CategoryName { get; set; }
+    public string? PhotoURL { get; set; }
+}
+public class CartItem
+{
+    public Bev Beverage { get; set; }
+    public int Quantity { get; set; }
+    public decimal Subtotal { get; set; }
+}

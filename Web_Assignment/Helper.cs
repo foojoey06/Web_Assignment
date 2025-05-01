@@ -1,14 +1,19 @@
-﻿using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
-using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using System.Net.Mail;
+using System.Net;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Web_Assignment;
 
 // TODO
-public class Helper(IWebHostEnvironment en, IHttpContextAccessor ct)
+public class Helper(IWebHostEnvironment en,
+                    IHttpContextAccessor ct,
+                    IConfiguration cf)
 {
     // ------------------------------------------------------------------------
     // Photo Upload
@@ -115,5 +120,91 @@ public class Helper(IWebHostEnvironment en, IHttpContextAccessor ct)
         }
 
         return password;
+    }
+
+    // ------------------------------------------------------------------------
+    // Email Helper Functions
+    // ------------------------------------------------------------------------
+
+    public void SendEmail(MailMessage mail)
+    {
+        string user = cf["Smtp:User"] ?? "";
+        string pass = cf["Smtp:Pass"] ?? "";
+        string name = cf["Smtp:Name"] ?? "";
+        string host = cf["Smtp:Host"] ?? "";
+        int port = cf.GetValue<int>("Smtp:Port");
+
+        mail.From = new MailAddress(user, name);
+
+        using var smtp = new SmtpClient
+        {
+            Host = host,
+            Port = port,
+            EnableSsl = true,
+            Credentials = new NetworkCredential(user, pass),
+        };
+
+        smtp.Send(mail);
+    }
+
+
+
+    // ------------------------------------------------------------------------
+    // DateTime Helper Functions
+    // ------------------------------------------------------------------------
+
+    // Return January (1) to December (12)
+    public SelectList GetMonthList()
+    {
+        var list = new List<object>();
+
+        for (int n = 1; n <= 12; n++)
+        {
+            list.Add(new
+            {
+                Id = n,
+                Name = new DateTime(1, n, 1).ToString("MMMM"),
+            });
+        }
+
+        return new SelectList(list, "Id", "Name");
+    }
+
+    // Return min to max years
+    public SelectList GetYearList(int min, int max, bool reverse = false)
+    {
+        var list = new List<int>();
+
+        for (int n = min; n <= max; n++)
+        {
+            list.Add(n);
+        }
+
+        if (reverse) list.Reverse();
+
+        return new SelectList(list);
+    }
+
+
+
+    // ------------------------------------------------------------------------
+    // Shopping Cart Helper Functions
+    // ------------------------------------------------------------------------
+
+    public Dictionary<int, int> GetCart()
+    {
+        return ct.HttpContext!.Session.Get<Dictionary<int, int>>("Cart") ?? [];
+    }
+
+    public void SetCart(Dictionary<int, int>? dict = null)
+    {
+        if (dict == null)
+        {
+            ct.HttpContext!.Session.Remove("Cart");
+        }
+        else
+        {
+            ct.HttpContext!.Session.Set("Cart", dict);
+        }
     }
 }

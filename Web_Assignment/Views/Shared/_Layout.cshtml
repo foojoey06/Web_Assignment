@@ -31,9 +31,12 @@
         @* Member photo *@
         @if (User.IsInRole("Cashier"))
         {
+            @* get user name*@
             var email = User.Identity!.Name;
             var photoURL = db.Staffs.FirstOrDefault(s => s.Email == email)?.Path;
+            var name = db.Staffs.FirstOrDefault(s => s.Email == email)?.Name;
 
+            <p>@name</p>
             if (!string.IsNullOrEmpty(photoURL))
             {
                 <img src="/member/@photoURL" id="profile-photo" />
@@ -48,6 +51,7 @@
         {
             <a href="/Account/Logout">Logout</a>
             <a href="/Account/UpdatePassword">Update Password</a>
+            <a href="/Home/Cart">Cart</a>
         }
         else
         {

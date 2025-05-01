@@ -1,21 +1,12 @@
-﻿using Demo;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Mail;
 
-namespace Web_Assignment.Controllers
+
+namespace Web_Assignment.Controllers;
+
+public class AccountController(DB db, IWebHostEnvironment en, Helper hp) : Controller
 {
-    public class AccountController : Controller
-    {
-        private readonly DB db;
-        private readonly Helper hp;
-        private readonly IWebHostEnvironment en;
-
-        public AccountController(IWebHostEnvironment en, DB db, Helper hp)
-        {
-            this.db = db;
-            this.en = en;
-            this.hp = hp;
-        }
 
         // GET: Account/Login
         public IActionResult Login()
@@ -203,4 +194,4 @@ namespace Web_Assignment.Controllers
         }
 
     }
-}
+
