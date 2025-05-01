@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq;
+using X.PagedList.Extensions;
 
 namespace Web_Assignment.Controllers
 {
@@ -23,10 +25,44 @@ namespace Web_Assignment.Controllers
             return View();
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string? name, string? sort, string? dir, int page = 1)
         {
-            ViewBag.Staffs = db.Staffs;
-            return View();
+            //Searching----------------------------
+            ViewBag.Name = name = name?.Trim() ?? "";
+
+            var searched = db.Staffs
+                             .Where(s => s.Name.Contains(name))
+                             .Where(s => s.Role == "Cashier");
+
+            //Sorting-----------------------------
+            ViewBag.Sort = sort;
+            ViewBag.Dir = dir;
+
+            Func<Staff, object> fn = sort switch
+            {
+                "Id" => s => s.Id,
+                "Name" => s => s.Name,
+                "Email" => s => s.Email,
+                _ => s => s.Id,
+            };
+
+            var sorted = dir == "des" ?
+                         searched.OrderByDescending(fn) :
+                         searched.OrderBy(fn);
+
+            //Paging-------------------------------
+            if (page < 1)
+            {
+                return RedirectToAction(null, new { name, sort, dir, page = 1 });
+            }
+
+            var m = sorted.ToPagedList(page, 10);
+
+            if (page > m.PageCount && m.PageCount > 0)
+            {
+                return RedirectToAction(null, new { name, sort, dir, page = m.PageCount });
+            }
+            return View(m);
         }
 
         [Authorize(Roles = "Admin")]
@@ -57,7 +93,7 @@ namespace Web_Assignment.Controllers
                 db.SaveChanges();
                 TempData["Info"] = $"Member {vm.Name} inserted.";
             }
-            return View("MemberAdd");
+            return RedirectToAction("MemberAdd");
         }
 
         [Authorize(Roles = "Admin")]

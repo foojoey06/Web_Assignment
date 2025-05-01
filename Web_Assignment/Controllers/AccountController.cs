@@ -48,5 +48,16 @@ namespace Web_Assignment.Controllers
             }
             return View(vm);
         }
+
+        public IActionResult Logout(string? returnURL)
+        {
+            TempData["Info"] = "Logout successfully.";
+
+            // Sign out
+            hp.SignOut();
+
+            return RedirectToAction("Index", "Home");
+        }
+
     }
 }

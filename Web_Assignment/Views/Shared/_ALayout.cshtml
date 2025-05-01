@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@inject DB db
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -7,18 +8,35 @@
     <link rel="shortcut icon" href="/images/favicon.png">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
     <link rel="stylesheet" href="/css/app.css" asp-append-version="true">
+    <link rel="stylesheet" href="/css/pager.css" asp-append-version="true">
     @RenderSection("head", false)
 </head>
 <body>
     <header>
         <h1><a href="/">Database SELECT</a></h1>
+
+        @* User email, role and pfp *@
+        <div>
+            @User.Identity.Name |
+            @(User.IsInRole("Admin") ? "Admin" : "")
+        </div>
+
+        @{
+            var photoURL = db.Staffs.FirstOrDefault(s => s.Email == User.Identity!.Name)!.Path;
+            <img src="@photoURL">
+        }
     </header>
 
     <nav>
         <a href="/Admin/Index">Staff</a>
         <a href="/Category/Category">Category</a>
-        <a href="/Member/Index">Member</a>
+        <a href="/Member/Index">Cashier</a>
+        
         <div></div>
+
+        <a href="/Account/Logout">Logout</a>
+        <a href="/Account/UpdateProfile">Update Profile</a>
+        <a href="/Account/UpdatePassword">Update Password</a>
     </nav>
 
     <main>

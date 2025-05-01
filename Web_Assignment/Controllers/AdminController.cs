@@ -6,6 +6,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Server.HttpSys;
+using X.PagedList.Extensions;
 
 namespace Web_Assignment.Controllers;
 
@@ -23,11 +24,11 @@ public class AdminController : Controller
     }
 
     [Authorize(Roles = "Admin")]
-    public IActionResult Index(string? name, string? sort, string? dir)
+    public IActionResult Index(string? name, string? sort, string? dir, int page = 1)
     {
 
         //Searching--------------------------------------
-        name = name?.Trim() ?? "";
+        ViewBag.name = name = name?.Trim() ?? "";
 
         var searched = db.Staffs
                          .Where(s => s.Name.Contains(name))
@@ -45,11 +46,24 @@ public class AdminController : Controller
             _       => s => s.Id,
         };
 
-        ViewBag.staffs = dir == "des" ?
+        var sorted = dir == "des" ?
                      searched.OrderByDescending(fn) :
                      searched.OrderBy(fn);
 
-        return View();
+        //Paging------------------------------------------
+        if (page < 1)
+        {
+            return RedirectToAction(null, new { name, sort, dir, page = 1 });
+        }
+
+        var m = sorted.ToPagedList(page, 10);
+
+        if (page > m.PageCount && m.PageCount > 0)
+        {
+            return RedirectToAction(null, new { name, sort, dir, page = m.PageCount });
+        }
+
+        return View(m);
 
     }
 

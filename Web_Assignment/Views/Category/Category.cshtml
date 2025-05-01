@@ -1,8 +1,11 @@
 ﻿@model CategoryVM
+@using X.PagedList
+@using X.PagedList.Mvc.Core
 @{
     ViewBag.Title = "Category";
     Layout = "../Shared/_ALayout";
-    IEnumerable<Category> categories = ViewBag.Categories;
+    IPagedList<Category> categories = ViewBag.Categories;
+    string[] fields = ["Id", "Name"];
 }
 
 <form method="post" class="form">
@@ -20,14 +23,35 @@
     <div class="info">@Html.Raw(TempData["Info"])</div>
 </form>
 
+<br>
+<form>
+    @Html.TextBox("name", "",
+            new { type = "search", autofocus = "", data_trim = "" })
+    @Html.Hidden("sort")
+    @Html.Hidden("dir")
+    <button>Search</button>
+</form>
+
+<br>
+
 <table class="table">
     <tr>
-        <th>Id</th>
-        <th>Name</th>
-        <th></th>
-    </tr>
+        @foreach (var f in fields)
+        {
+            string d = "asc";
+            string c = "";
 
-    <br>
+            if (f == ViewBag.Sort)
+            {
+                d = ViewBag.Dir == "des" ? "asc" : "des";
+                c = ViewBag.Dir;
+            }
+
+            <th>
+                <a href="?name=@ViewBag.Name&sort=@f&dir=@d" class="@c">@f</a>
+            </th>
+        }
+    </tr>
 
     @foreach (var c in categories)
     {
@@ -39,6 +63,19 @@
                 <button data-post="/Category/Delete/@c.Id">Delete</button>
             </td>
         </tr>
-        <br>
     }
 </table>
+
+@{
+    var options = PagedListRenderOptions.ClassicPlusFirstAndLast;
+    options.LinkToFirstPageFormat = "First";
+    options.LinkToLastPageFormat = "Last";
+    options.LinkToPreviousPageFormat = "Previous";
+    options.LinkToNextPageFormat = "Next";
+}
+
+@Html.PagedListPager(
+        categories,
+        page => $"?name={ViewBag.Name}&sort={ViewBag.Sort}&dir={ViewBag.Dir}&page={page}",
+        options
+    )
