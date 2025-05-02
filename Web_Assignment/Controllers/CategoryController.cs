@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using X.PagedList.Extensions;
@@ -14,11 +15,13 @@ public class CategoryController : Controller
         this.db = db;
     }
 
+    [Authorize(Roles = "Admin")]
     public IActionResult Index()
     {
         return View();
     }
 
+    [Authorize(Roles = "Admin")]
     public IActionResult Category(string? name, string? sort, string? dir, int page = 1)
     {
         //Searching--------------------------------
@@ -56,11 +59,13 @@ public class CategoryController : Controller
         return View();
     }
 
+    [Authorize(Roles = "Admin")]
     public bool checkCategory(string Name)
     {
         return !db.Categories.Any(s => s.Name == Name);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public IActionResult Category(CategoryVM vm)
     {
@@ -76,6 +81,7 @@ public class CategoryController : Controller
         return RedirectToAction("Category");
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public ActionResult Delete(int? id)
     {
@@ -90,6 +96,7 @@ public class CategoryController : Controller
         return RedirectToAction("Category");
     }
 
+    [Authorize(Roles = "Admin")]
     public IActionResult CategoryUpdate(int? id)
     {
         var p = db.Categories.Find(id);
@@ -108,6 +115,7 @@ public class CategoryController : Controller
         return View(vm);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public IActionResult CategoryUpdate(CategoryVM vm)
     {

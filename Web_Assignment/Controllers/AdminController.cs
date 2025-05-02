@@ -130,9 +130,9 @@ public class AdminController : Controller
     }
 
     [Authorize(Roles = "Admin")]
-    public IActionResult StaffUpdate(int? id)
+    public IActionResult StaffUpdate(string? email)
     {
-        var p = db.Staffs.Find(id);
+        var p = db.Staffs.FirstOrDefault(s => s.Email == email);
 
         if (p == null)
         {
@@ -156,7 +156,7 @@ public class AdminController : Controller
     [HttpPost]
     public IActionResult StaffUpdate(StaffUpdateVM vm)
     {
-        var p = db.Staffs.Find(vm.Id);
+        var p = db.Staffs.FirstOrDefault(s => s.Email == vm.Email);
 
         if(p == null)
         {
@@ -174,7 +174,7 @@ public class AdminController : Controller
         //Update Record
         if (ModelState.IsValid)
         {
-            p.Email = vm.Email;
+            p.Name = vm.Name;
             p.Role = vm.Role;
 
             if (vm.Path != null)

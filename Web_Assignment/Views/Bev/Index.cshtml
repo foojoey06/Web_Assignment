@@ -1,27 +1,25 @@
 ﻿@using X.PagedList
 @using X.PagedList.Mvc.Core
-@model IPagedList<Staff>
-@{
-    ViewBag.Title = "Staff List";
-    Layout = "../Shared/_ALayout";
-    string[] fields = ["Id", "Name", "Email"];
 
+@{
+    Layout = "../Shared/_ALayout";
+    ViewBag.Title = "Beverage List";
+    IPagedList<Beverage> beverages = ViewBag.Beverages;
+    string[] fields = ["Id", "Name", "Price", "Stock", "Category Name"];
 }
 
 <form>
     @Html.TextBox("name", "",
-                  new { type = "search", autofocus = "", data_trim = "" })
+            new { type = "search", autofocus = "", data_trim = "" })
     @Html.Hidden("sort")
     @Html.Hidden("dir")
     <button>Search</button>
 </form>
-
 <section>
-    <button><a href="/Admin/StaffAdd">Register Staff</a></button>
+    <button><a href="/Bev/BevAdd">Add Beverage</a></button>
 </section>
 
 <br>
-
 <table class="table">
     <tr>
         @foreach (var f in fields)
@@ -41,14 +39,17 @@
         }
     </tr>
 
-    @foreach (var s in Model)
+    @foreach (var s in beverages)
     {
         <tr>
-            <td id="StaffId">@s.Id</td>
+            <td>@s.Id</td>
             <td>@s.Name</td>
-            <td>@s.Email</td>
+            <td>@s.Price</td>
+            <td>@s.stock</td>
+            <td>@s.Category.Name</td>
             <td>
-                <button data-post="/Admin/StaffDelete/@s.Id?@s.Name">Delete</button>
+                <button data-get="/Bev/BevUpdate/@s.Id">Update</button>
+                <button data-post="/Bev/BevDelete/@s.Id">Delete</button>
             </td>
         </tr>
     }
@@ -63,8 +64,10 @@
 }
 
 @Html.PagedListPager(
-        Model,
-        page => $"?name={ViewBag.Name}&sort={ViewBag.Sort}&dir={ViewBag.Dir}&page={page}",
-        options
-    )
+            beverages,
+            page => $"?name={ViewBag.Name}&sort={ViewBag.Sort}&dir={ViewBag.Dir}&page={page}",
+            options
+        )
+
+<div class="info">@Html.Raw(TempData["Info"])</div>
 

@@ -13,7 +13,7 @@
 </head>
 <body>
     <header>
-        <h1><a href="/">Database SELECT</a></h1>
+        <h1><a href="/">Admin Intranet</a></h1>
 
         @* User email, role and pfp *@
         <div>
@@ -23,19 +23,23 @@
 
         @{
             var photoURL = db.Staffs.FirstOrDefault(s => s.Email == User.Identity!.Name)!.Path;
-            <img src="@photoURL">
+            if (!string.IsNullOrEmpty(photoURL))
+            {
+                <img src="@photoURL">
+            }
         }
     </header>
 
     <nav>
         <a href="/Admin/Index">Staff</a>
         <a href="/Category/Category">Category</a>
+        <a href="/Bev/Index">Beverage</a>
         <a href="/Member/Index">Cashier</a>
         
         <div></div>
 
         <a href="/Account/Logout">Logout</a>
-        <a href="/Account/UpdateProfile">Update Profile</a>
+        <a href="/Admin/StaffUpdate?email=@User.Identity.Name">Update Profile</a>
         <a href="/Account/UpdatePassword">Update Password</a>
     </nav>
 

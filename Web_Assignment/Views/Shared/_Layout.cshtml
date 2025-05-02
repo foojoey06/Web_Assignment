@@ -24,22 +24,17 @@
             <div>
                 @User.Identity.Name |
                 @(User.IsInRole("Admin") ? "Admin" : "")
-                @(User.IsInRole("Member") ? "Member" : "")
+                @(User.IsInRole("Cashier") ? "Cashier" : "")
             </div>
         }
 
-        @* Member photo *@
-        @if (User.IsInRole("Cashier"))
-        {
-            @* get user name*@
-            var email = User.Identity!.Name;
-            var photoURL = db.Staffs.FirstOrDefault(s => s.Email == email)?.Path;
-            var name = db.Staffs.FirstOrDefault(s => s.Email == email)?.Name;
 
-            <p>@name</p>
+        @* Profile Picture *@
+        @{
+            var photoURL = db.Staffs.FirstOrDefault(s => s.Email == User.Identity.Name)?.Path;
             if (!string.IsNullOrEmpty(photoURL))
             {
-                <img src="/member/@photoURL" id="profile-photo" />
+                <img src="@photoURL">
             }
         }
     </header>

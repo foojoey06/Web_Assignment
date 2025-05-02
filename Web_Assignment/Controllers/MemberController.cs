@@ -19,7 +19,7 @@ namespace Web_Assignment.Controllers
             this.db = db;
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public IActionResult MemberAdd()
         {
             return View();

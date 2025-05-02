@@ -41,7 +41,7 @@ public class StaffUpdateVM
 {
     public int Id { get; set; }
 
-    //[Required]
+    [Required]
     [MaxLength(50)]
     public string Name { get; set; }
 
@@ -49,10 +49,7 @@ public class StaffUpdateVM
     [RegularExpression("^(Cashier|Admin)$", ErrorMessage = "Role must be 'Cashier' or 'Admin' only.")]
     public string Role { get; set; }
 
-    [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Invalid Email Format.")]
-    [Remote("CheckEmail", "Admin", ErrorMessage = "Email already Registered.")]
     public string Email { get; set; }
-
     //Other Properties
     public string? PhotoURL { get; set; }
     public IFormFile? Path { get; set; }
@@ -86,7 +83,6 @@ public class MemberUpdateVM
 {
     public int Id { get; set; }
 
-    //[Required]
     [MaxLength(50)]
     public string Name { get; set; }
     [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Invalid Email Format.")]
@@ -95,6 +91,29 @@ public class MemberUpdateVM
     //Other Properties
     public string? PhotoURL { get; set; }
     public IFormFile? Path { get; set; }
+}
+
+//Beverage Add View Model
+public class BeverageVM
+{
+    public int Id { get; set; }
+
+    [Required]
+    [MaxLength(50)]
+    [Remote("CheckBevName", "Bev", ErrorMessage = "Beverage with same name already registered.")]
+    public string Name { get; set; }
+
+    [Required]
+    [Range(6.00, 17.00)]
+    public decimal Price { get; set; }
+
+    [Required]
+    [Range(30, 100)]
+    public int Stock { get; set; }
+
+    [Required]
+    public int CategoryName { get; set; }
+
 }
 
 //Login VM
@@ -134,16 +153,19 @@ public class RegisterVM
     public IFormFile Photo { get; set; }
 }
 
+//Update Password View Model
 public class UpdatePasswordVM
 {
     [StringLength(100, MinimumLength = 5)]
     [DataType(DataType.Password)]
     [Display(Name = "Current Password")]
     public string Current { get; set; }
+
     [StringLength(100, MinimumLength = 5)]
     [DataType(DataType.Password)]
     [Display(Name = "New Password")]
     public string New { get; set; }
+
     [StringLength(100, MinimumLength = 5)]
     [Compare("New")]
     [DataType(DataType.Password)]
@@ -151,6 +173,7 @@ public class UpdatePasswordVM
     public string Confirm { get; set; }
 }
 
+//Member Update View Model
 public class UpdateProfileVM
 {
     public string? Email { get; set; }
@@ -161,12 +184,15 @@ public class UpdateProfileVM
     public IFormFile? Photo { get; set; }
 }
 
+
 public class ResetPasswordVM
 {
     [StringLength(100)]
     [EmailAddress]
     public string Email { get; set; }
 }
+
+
 
 public class Bev 
 {
@@ -176,9 +202,12 @@ public class Bev
     public string CategoryName { get; set; }
     public string? PhotoURL { get; set; }
 }
+
+
 public class CartItem
 {
     public Bev Beverage { get; set; }
     public int Quantity { get; set; }
     public decimal Subtotal { get; set; }
 }
+

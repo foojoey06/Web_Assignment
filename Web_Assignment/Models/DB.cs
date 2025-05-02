@@ -133,7 +133,6 @@ public class Order
     public decimal Amount { get; set; }
 
     public int StaffId { get; set; }
-    //public Payment PaymentId { get; set; }
 
     //np
     public List<OrderItem> OrderItems { get; set; } = [];
