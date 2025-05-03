@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using SixLabors.ImageSharp.Memory;
 using System.Linq;
 using X.PagedList.Extensions;
 
@@ -125,6 +126,7 @@ namespace Web_Assignment.Controllers
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpPost]
         public IActionResult BevDelete(int? id)
         {
 
@@ -142,6 +144,97 @@ namespace Web_Assignment.Controllers
                 db.SaveChanges();
 
                 TempData["Info"] = "Beverage record deleted";
+            }
+
+            return RedirectToAction("Index", "Bev");
+        }
+
+        public IActionResult BevUpdate(int? id)
+        {
+            var b = db.Beverages.Include(x => x.Category).FirstOrDefault(x => x.Id == id);
+            ViewBag.Categories = new SelectList(db.Categories, "Id", "Name");
+            if(b == null)
+            {
+                TempData["Info"] = "Beverage Record not found.";
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.Images = db.Images.Where(s => s.BeverageId == id);
+
+            var vm = new BevUpdateVM
+            {
+                Id = b.Id,
+                Name = b.Name,
+                Price = b.Price,
+                Stock = b.stock,
+                CategoryName = b.Category.Id,
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public IActionResult BevUpdate (BevUpdateVM vm, List<IFormFile> photo)
+        {
+            //Validate Photo Only
+            if (ModelState.IsValid)
+            {
+                var e = "";
+                foreach (var s in photo)
+                {
+                    e = hp.ValidatePhoto(s);
+                }
+                if (e != "") ModelState.AddModelError("photo", e);
+                TempData["Info"] = $"{e}";
+            }
+
+            var b = db.Beverages.Find(vm.Id);
+            var img = db.Images.Where(s => s.BeverageId == vm.Id);
+
+            if(b == null)
+            {
+                TempData["Info"] = "Beverage Record not found.";
+                return RedirectToAction("Index", "Bev");
+            }
+
+            //Update beverage record
+            if (ModelState.IsValid)
+            {
+                b.Name = vm.Name;
+                b.Price = vm.Price;
+                b.stock = vm.Stock;
+                b.CategoryId = vm.CategoryName;
+
+                //update photos if new photos uploaded
+                if(photo.Count() > 0)
+                {
+                    //remove records from images 
+                    if (img != null)
+                    {
+                        foreach (var s in img)
+                        {
+                            db.Images.Remove(s);
+                            hp.DeletePhoto(s.Path, "Beverage");
+                        }
+                    }
+
+                    //add new records for images
+                    if (photo != null)
+                    {
+                        foreach (var s in photo)
+                        {
+                            db.Images.Add(new()
+                            {
+                                Path = "/Beverage/" + hp.SavePhoto(s, "Beverage"),
+                                BeverageId = vm.Id,
+                            });
+                        }
+                    }
+                }
+                db.SaveChanges();
+
+                TempData["Info"] = "Beverage Record updated.";
+                return RedirectToAction("Index", "Bev");
             }
 
             return RedirectToAction("Index", "Bev");

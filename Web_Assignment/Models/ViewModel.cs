@@ -113,7 +113,28 @@ public class BeverageVM
 
     [Required]
     public int CategoryName { get; set; }
+}
 
+//Bverage Update VM
+public class BevUpdateVM()
+{
+    public int Id { get; set; }
+
+    [Required]
+    [MaxLength(50)]
+    [Remote("CheckBevName", "Bev", ErrorMessage = "Beverage with same name already registered.")]
+    public string Name { get; set; }
+
+    [Required]
+    [Range(6.00, 17.00)]
+    public decimal Price { get; set; }
+
+    [Required]
+    [Range(30, 100)]
+    public int Stock { get; set; }
+
+    [Required]
+    public int CategoryName { get; set; }
 }
 
 //Login VM
