@@ -9,7 +9,7 @@
     {
         <div class="product">
             <img src="/Beverage/@(p.PhotoURL)" alt="@p.Name" />
-            <div>@p.Id - @p.Name - RM @p.Price</div>
+            <div>@p.Name - RM @p.Price</div>
 
             @if (cart.ContainsKey(p.Id))
             {

@@ -39,24 +39,31 @@
     </table>
 </div>
 
-<p style="color: red">
-    Minimum Order Amount = <b>RM 2.00</b>
-</p>
-
 @{
     var total = Model.Sum(i => i.Subtotal);
-    var disabled = Model.Count() == 0 || !User.IsInRole("Member") || total < 2;
+    var disabled = Model.Count() == 0 || !User.IsInRole("Cashier") || total < 2;
 }
 
-<button data-post="/Product/Checkout" disabled="@disabled">Checkout</button>
+<button data-post="/Product/Checkout" disabled="@disabled" style="margin-top:10px;">Checkout</button>
 
-@if (!User.IsInRole("Member"))
+@if (!User.IsInRole("Cashier"))
 {
     <p>
         <a href="/Account/Login?returnURL=/Product/ShoppingCart">Login</a>
         with member account to proceed checkout
     </p>
 }
+else if (total < 2)
+{
+    <p style="color: red">
+        Minimum Order Amount = <b>RM 2.00</b>
+    </p>
+    <p>
+        <a href="/home/index">Add more items</a>
+        to your cart to proceed checkout
+    </p>
+}
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {

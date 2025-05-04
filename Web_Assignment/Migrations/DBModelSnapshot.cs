@@ -114,14 +114,9 @@ namespace Web_Assignment.Migrations
                     b.Property<TimeOnly>("Time")
                         .HasColumnType("time");
 
-                    b.Property<int>("VoucherId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("StaffId");
-
-                    b.HasIndex("VoucherId");
 
                     b.ToTable("Orders");
                 });
@@ -248,42 +243,6 @@ namespace Web_Assignment.Migrations
                     b.ToTable("Staffs");
                 });
 
-            modelBuilder.Entity("Web_Assignment.Models.Voucher", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateOnly>("ActivationDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateOnly>("ExpiryDate")
-                        .HasColumnType("date");
-
-                    b.Property<int>("Limit")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("MinSpend")
-                        .HasPrecision(4, 2)
-                        .HasColumnType("decimal(4,2)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Vouchers");
-                });
-
             modelBuilder.Entity("Web_Assignment.Models.Beverage", b =>
                 {
                     b.HasOne("Web_Assignment.Models.Category", "Category")
@@ -314,15 +273,7 @@ namespace Web_Assignment.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Web_Assignment.Models.Voucher", "Voucher")
-                        .WithMany("Orders")
-                        .HasForeignKey("VoucherId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Staff");
-
-                    b.Navigation("Voucher");
                 });
 
             modelBuilder.Entity("Web_Assignment.Models.OrderItem", b =>
@@ -375,11 +326,6 @@ namespace Web_Assignment.Migrations
                 });
 
             modelBuilder.Entity("Web_Assignment.Models.Staff", b =>
-                {
-                    b.Navigation("Orders");
-                });
-
-            modelBuilder.Entity("Web_Assignment.Models.Voucher", b =>
                 {
                     b.Navigation("Orders");
                 });
