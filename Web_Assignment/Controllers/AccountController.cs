@@ -193,5 +193,76 @@ public class AccountController(DB db, IWebHostEnvironment en, Helper hp) : Contr
             return View(vm);
         }
 
+    public IActionResult ForgetPassword()
+    {
+        return View();
     }
+
+    [HttpPost]
+    public IActionResult ForgetPassword(ForgetPasswordVM vm)
+    {
+        var u = db.Staffs.FirstOrDefault(s => s.Email == vm.Email);
+
+        if (u == null)
+        {
+            ModelState.AddModelError("Email", "Email not found.");
+        }
+
+        if (ModelState.IsValid)
+        {
+            string password = hp.RandomPassword();
+
+            //generate random otp
+            Random random = new Random();
+            int otp = random.Next(10000, 99999);
+
+            //u!.Password = hp.HashPassword(password);
+            u.Otp = otp;
+            db.SaveChanges();
+
+            // Send reset password email
+            SendResetPasswordEmail(u, password);
+
+            TempData["Info"] = $"Password reset. Check your email.";
+        }
+        return RedirectToAction();
+    }
+
+    private void SendResetPasswordEmail(Staff u, string password)
+    {
+        var mail = new MailMessage();
+        mail.To.Add(new MailAddress(u.Email, u.Name));
+        mail.Subject = "Reset Password";
+        mail.IsBodyHtml = true;
+
+        var url = Url.Action("Login", "Account", null, "https");
+
+        var path = u switch
+        {
+            Admin a => Path.Combine(en.WebRootPath, "photos", a.Path),
+            Cashier m => Path.Combine(en.WebRootPath, "photos", m.Path),
+            _ => "",
+        };
+
+        var att = new Attachment(path);
+        mail.Attachments.Add(att);
+        att.ContentId = "photo";
+
+        mail.Body = $@"
+            <img src='cid:photo' style='width: 200px; height: 200px;
+                                        border: 1px solid #333'>
+            <p>Dear {u.Name},<p>
+            <p>Your password has been reset to:</p>
+            <h1 style='color: red'>{u.Otp}</h1>
+            <p>
+                Please <a href='{url}'>login</a>
+                with your new password.
+            </p>
+            <p>From, 🐱 Super Admin</p>
+        ";
+
+        hp.SendEmail(mail);
+    }
+
+}
 
