@@ -229,6 +229,9 @@ public class CartItem
 {
     public Bev Beverage { get; set; }
     public int Quantity { get; set; }
+    public string SugarLevel { get; set; }
+    public string Temperature { get; set; }
+    public string Size { get; set; }
     public decimal Subtotal { get; set; }
 }
 
