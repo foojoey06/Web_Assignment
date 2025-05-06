@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Stripe;
 using Stripe.Checkout;
-using System.ComponentModel; // If you're using Stripe later
+using System.ComponentModel;
+using System.Net.Mail; // If you're using Stripe later
 
 namespace Web_Assignment.Controllers;
 
@@ -150,7 +151,7 @@ public class HomeController(DB db, Helper hp) : Controller
         var cart = hp.GetCart();
         if (cart.Count == 0)
         {
-            TempData["Error"] = "Your cart is empty.";
+            TempData["Info"] = "Your cart is empty.";
             return RedirectToAction("Cart");
         }
 
@@ -162,7 +163,7 @@ public class HomeController(DB db, Helper hp) : Controller
 
         if (staffid == 0) // Ensure staff ID exists (0 indicates no result found)
         {
-            TempData["Error"] = "Invalid staff ID.";
+            TempData["Info"] = "Invalid staff ID.";
             return RedirectToAction("Cart");
         }
 
@@ -291,9 +292,62 @@ public class HomeController(DB db, Helper hp) : Controller
     }
 
     [Authorize]
-    public IActionResult Success(string? sessionId)
+    public IActionResult Success(string sessionId)
     {
-        return View();
+        // Step 1: Retrieve session details
+        var service = new SessionService();
+        var session = service.Get(sessionId);
+
+        var paymentIntentId = session.PaymentIntentId;
+        Order order = null;
+
+        if (!string.IsNullOrEmpty(paymentIntentId))
+        {
+            // Step 2: Retrieve the payment intent
+            var piService = new PaymentIntentService();
+            var paymentIntent = piService.Get(paymentIntentId);
+
+            // Step 3: List charges associated with the payment intent
+            var chargeService = new ChargeService();
+            var charges = chargeService.List(new ChargeListOptions { PaymentIntent = paymentIntentId }).Data;
+
+            if (charges.Count > 0)
+            {
+                int orderId = Convert.ToInt32(session.ClientReferenceId);
+                order = db.Orders
+                        .Include(o => o.OrderItems)
+                        .ThenInclude(oi => oi.Beverage) // Include beverage details
+                        .FirstOrDefault(o => o.Id == orderId);
+
+                var receiptUrl = charges[0].ReceiptUrl;
+
+                var mail = new MailMessage();
+                mail.To.Add(new MailAddress(session.CustomerEmail));
+                mail.Subject = "Payment Receipt";
+
+                // Add order items to the email body
+                mail.Body += "<p>Order Details:</p><ul>";
+                foreach (var oi in order.OrderItems)
+                {
+                    mail.Body += $"<li>{oi.Beverage.Name} - {oi.Size} - {oi.Temperature} - {oi.SugarLevel} Sugar: {oi.Quantity}</li>";
+                }
+                mail.Body += "</ul>"; // Close the unordered list
+                mail.Body += $"<p>Total Amount: {order.Amount}</p>";
+                mail.Body += $"<p>Receipt URL: <a href='{receiptUrl}'>Click here</a></p>";
+
+                mail.IsBodyHtml = true;
+                hp.SendEmail(mail);
+                TempData["Info"] = "Payment successful! A receipt has been sent to customer email.";
+            }
+            else
+            {
+                TempData["Info"] = "No charges found for this payment.";
+            }
+        }
+
+        return View(); // Render the view and pass the receipt URL and order details
     }
+
+
 
 }
