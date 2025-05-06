@@ -1,42 +1,114 @@
 ﻿@model IEnumerable<Bev>
 
 @{
-    Dictionary<int, int> cart = ViewBag.Cart;
+    Dictionary<int, CartItem> cart = ViewBag.Cart;
+    string currentSize = "M";
+    string currentSugar = "Normal";
+    string currentTemp = ViewBag.CurrentTemp ?? "Cold";
 }
 
-<div class="products">
-    @foreach (var p in Model)
-    {
-        <div class="product">
-            <img src="/Beverage/@(p.PhotoURL)" alt="@p.Name" />
-            <div>@p.Name - RM @p.Price</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Beverage Menu</title>
+    <style>
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+        }
 
-            @if (cart.ContainsKey(p.Id))
-            {
-                <!-- ✅ Already in Cart: show dropdown to update -->
-                <form data-ajax="true"
-                      data-ajax-update="#target"
-                      method="post"
-                      action="/Home/UpdateCart">
-                    @{
-                        int quantity = cart[p.Id];
-                        var list = new SelectList(Enumerable.Range(1, 10), quantity);
-                    }
-                    @Html.Hidden("ProductId", p.Id)
-                    <span>✅ In Cart</span>
-                </form>
+        .product-card {
+            display: flex;
+            flex-direction: column;
+            width: 200px;
+        }
+
+        .product-content {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+        }
+
+            .product-content img {
+                width: 100%;
+                height: 160px;
+                object-fit: cover;
+                margin-bottom: 10px;
+                border-radius: 4px;
             }
-            else
-            {
-                <form data-ajax="true"
-                      data-ajax-update="#target"
-                      method="post"
-                      action="/Home/UpdateCart">
-                    @Html.Hidden("ProductId", p.Id)
-                    @Html.Hidden("Quantity", 1)
-                    <button type="submit">Add to Cart</button>
-                </form>
+
+        .product-info {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .product-actions {
+            width: 100%;
+        }
+
+            .product-actions button {
+                width: 100%;
+                padding: 8px 0;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-weight: bold;
+                transition: background-color 0.3s;
             }
-        </div>
-    }
-</div>
+
+        .btn-add-to-cart {
+            background-color: #28a745;
+            color: white;
+        }
+
+            .btn-add-to-cart:hover {
+                background-color: #218838;
+            }
+
+        .btn-in-cart {
+            background-color: #6c757d;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="products">
+        @foreach (var p in Model)
+        {
+            <div class="product-card">
+                <div class="product-content">
+                    <img src="/Beverage/@(p.PhotoURL)" alt="@p.Name" />
+                    <div class="product-info">@p.Name - RM @p.Price</div>
+                </div>
+
+                <div class="product-actions">
+                    <form data-ajax="true"
+                          data-ajax-update="#target"
+                          method="post"
+                          action="/Home/UpdateCart">
+                        @Html.Hidden("Size", currentSize)
+                        @Html.Hidden("SugarLevel", currentSugar)
+                        @Html.Hidden("Temperature", currentTemp)
+                        @Html.Hidden("ProductId", p.Id)
+                        @Html.Hidden("Quantity", 1)
+
+                        <button type="submit" class="btn-add-to-cart">Add to Cart</button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Target for AJAX update -->
+    <div id="target"></div>
+</body>
+</html>
