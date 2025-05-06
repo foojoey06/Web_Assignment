@@ -232,3 +232,11 @@ public class CartItem
     public decimal Subtotal { get; set; }
 }
 
+//Forget Password View Model
+public class ForgetPasswordVM
+{
+    [MaxLength(100)]
+    [EmailAddress]
+    public string Email { get; set; }
+}
+

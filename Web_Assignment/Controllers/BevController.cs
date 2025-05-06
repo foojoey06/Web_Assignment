@@ -149,6 +149,7 @@ namespace Web_Assignment.Controllers
             return RedirectToAction("Index", "Bev");
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult BevUpdate(int? id)
         {
             var b = db.Beverages.Include(x => x.Category).FirstOrDefault(x => x.Id == id);
@@ -173,6 +174,7 @@ namespace Web_Assignment.Controllers
             return View(vm);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult BevUpdate (BevUpdateVM vm, List<IFormFile> photo)
         {
