@@ -12,8 +12,8 @@ using Web_Assignment.Models;
 namespace Web_Assignment.Migrations
 {
     [DbContext(typeof(DB))]
-    [Migration("20250428205714_Bev7")]
-    partial class Bev7
+    [Migration("20250506160352_createdb")]
+    partial class createdb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -117,14 +117,9 @@ namespace Web_Assignment.Migrations
                     b.Property<TimeOnly>("Time")
                         .HasColumnType("time");
 
-                    b.Property<int>("VoucherId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("StaffId");
-
-                    b.HasIndex("VoucherId");
 
                     b.ToTable("Orders");
                 });
@@ -141,6 +136,9 @@ namespace Web_Assignment.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.Property<string>("Size")
@@ -228,8 +226,8 @@ namespace Web_Assignment.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Path")
                         .IsRequired()
@@ -249,42 +247,6 @@ namespace Web_Assignment.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Staffs");
-                });
-
-            modelBuilder.Entity("Web_Assignment.Models.Voucher", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateOnly>("ActivationDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateOnly>("ExpiryDate")
-                        .HasColumnType("date");
-
-                    b.Property<int>("Limit")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("MinSpend")
-                        .HasPrecision(4, 2)
-                        .HasColumnType("decimal(4,2)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Vouchers");
                 });
 
             modelBuilder.Entity("Web_Assignment.Models.Beverage", b =>
@@ -317,15 +279,7 @@ namespace Web_Assignment.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Web_Assignment.Models.Voucher", "Voucher")
-                        .WithMany("Orders")
-                        .HasForeignKey("VoucherId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Staff");
-
-                    b.Navigation("Voucher");
                 });
 
             modelBuilder.Entity("Web_Assignment.Models.OrderItem", b =>
@@ -378,11 +332,6 @@ namespace Web_Assignment.Migrations
                 });
 
             modelBuilder.Entity("Web_Assignment.Models.Staff", b =>
-                {
-                    b.Navigation("Orders");
-                });
-
-            modelBuilder.Entity("Web_Assignment.Models.Voucher", b =>
                 {
                     b.Navigation("Orders");
                 });

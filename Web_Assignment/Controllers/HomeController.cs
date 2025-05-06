@@ -12,23 +12,33 @@ public class HomeController(DB db, Helper hp) : Controller
     public IActionResult Index()
     {
         ViewBag.Cart = hp.GetCart();
-        var m = db.Beverages
-    .Include(b => b.Category)
-    .Include(b => b.Images)
-    .ToList() // forces in-memory execution
-    .Select(b => new Bev
-    {
-        Id = b.Id,
-        Name = b.Name,
-        Price = b.Price,
-        CategoryName = b.Category.Name,
-        PhotoURL = b.Images.FirstOrDefault()?.Path // now safe
-    })
-    .ToList();
 
-        if (Request.IsAjax()) return PartialView("_Index", m);
-        return View(m);
+        var allBeverages = db.Beverages
+            .Include(b => b.Category)
+            .Include(b => b.Images)
+            .ToList();
+
+        // Project to view model (only one image stored)
+        var model = allBeverages.Select(b => new Bev
+        {
+            Id = b.Id,
+            Name = b.Name,
+            Price = b.Price,
+            CategoryName = b.Category.Name,
+            PhotoURL = b.Images.FirstOrDefault()?.Path
+        }).ToList();
+
+        // Pass all images per product via ViewBag
+        ViewBag.ImagesPerProduct = allBeverages.ToDictionary(
+            b => b.Id,
+            b => b.Images.Select(img => img.Path).ToList()
+        );
+
+        if (Request.IsAjax()) return PartialView("_Index", model);
+        return View(model);
     }
+
+
 
     public IActionResult Cart()
     {

@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<Bev>
 
 @{
+    var imagesPerProduct = ViewBag.ImagesPerProduct as Dictionary<int, List<string>>;
     Dictionary<int, CartItem> cart = ViewBag.Cart;
     string currentSize = "M";
     string currentSugar = "Normal";
@@ -11,8 +12,8 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Beverage Menu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
         .products {
             display: flex;
@@ -37,18 +38,34 @@
             margin-bottom: 10px;
         }
 
-            .product-content img {
+        .slideshow {
+            position: relative;
+            width: 100%;
+            height: 160px;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+            .slideshow img {
+                position: absolute;
+                top: 0;
+                left: 0;
                 width: 100%;
                 height: 160px;
                 object-fit: cover;
-                margin-bottom: 10px;
-                border-radius: 4px;
+                opacity: 0;
+                transition: opacity 1s ease-in-out;
             }
+
+                .slideshow img.active {
+                    opacity: 1;
+                    z-index: 1;
+                }
 
         .product-info {
             text-align: center;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-top: 10px;
         }
 
         .product-actions {
@@ -86,7 +103,22 @@
         {
             <div class="product-card">
                 <div class="product-content">
-                    <img src="/Beverage/@(p.PhotoURL)" alt="@p.Name" />
+                    <div class="slideshow" data-product-id="@p.Id">
+                        @{
+                            var images = imagesPerProduct.ContainsKey(p.Id)
+                            ? imagesPerProduct[p.Id]
+                            : new List<string> { p.PhotoURL };
+                        }
+
+                        @for (int i = 0; i < images.Count; i++)
+                        {
+                            var path = images[i];
+                            <img src="/Beverage/@path"
+                                 alt="@p.Name"
+                                 class="slide-image @(i == 0 ? "active" : "")"
+                                 data-index="@i" />
+                        }
+                    </div>
                     <div class="product-info">@p.Name - RM @p.Price</div>
                 </div>
 
@@ -108,7 +140,25 @@
         }
     </div>
 
-    <!-- Target for AJAX update -->
     <div id="target"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const slideshows = document.querySelectorAll(".slideshow");
+
+            slideshows.forEach(slideshow => {
+                const images = slideshow.querySelectorAll(".slide-image");
+                let current = 0;
+
+                if (images.length > 1) {
+                    setInterval(() => {
+                        images[current].classList.remove("active");
+                        current = (current + 1) % images.length;
+                        images[current].classList.add("active");
+                    }, 10000); // Change every 10 seconds
+                }
+            });
+        });
+    </script>
 </body>
 </html>

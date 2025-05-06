@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Web_Assignment.Migrations
 {
     /// <inheritdoc />
-    public partial class Bev1 : Migration
+    public partial class createdb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,7 +32,7 @@ namespace Web_Assignment.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Role = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Status = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     Otp = table.Column<int>(type: "int", nullable: false),
@@ -41,24 +41,6 @@ namespace Web_Assignment.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Staffs", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Vouchers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    Limit = table.Column<int>(type: "int", nullable: false),
-                    ExpiryDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    ActivationDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    MinSpend = table.Column<decimal>(type: "decimal(4,2)", precision: 4, scale: 2, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Vouchers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -92,7 +74,6 @@ namespace Web_Assignment.Migrations
                     Date = table.Column<DateOnly>(type: "date", nullable: false),
                     Time = table.Column<TimeOnly>(type: "time", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(6,2)", precision: 6, scale: 2, nullable: false),
-                    VoucherId = table.Column<int>(type: "int", nullable: false),
                     StaffId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -102,12 +83,6 @@ namespace Web_Assignment.Migrations
                         name: "FK_Orders_Staffs_StaffId",
                         column: x => x.StaffId,
                         principalTable: "Staffs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Orders_Vouchers_VoucherId",
-                        column: x => x.VoucherId,
-                        principalTable: "Vouchers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -142,7 +117,8 @@ namespace Web_Assignment.Migrations
                     Temperature = table.Column<string>(type: "nvarchar(4)", maxLength: 4, nullable: false),
                     Size = table.Column<string>(type: "nvarchar(1)", maxLength: 1, nullable: false),
                     BeverageId = table.Column<int>(type: "int", nullable: false),
-                    OrderId = table.Column<int>(type: "int", nullable: false)
+                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -210,11 +186,6 @@ namespace Web_Assignment.Migrations
                 column: "StaffId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_VoucherId",
-                table: "Orders",
-                column: "VoucherId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Payments_OrderId",
                 table: "Payments",
                 column: "OrderId",
@@ -244,9 +215,6 @@ namespace Web_Assignment.Migrations
 
             migrationBuilder.DropTable(
                 name: "Staffs");
-
-            migrationBuilder.DropTable(
-                name: "Vouchers");
         }
     }
 }
