@@ -116,6 +116,8 @@ public class OrderItem
     public int BeverageId { get; set; }
     public int OrderId { get; set; }
 
+    public int Quantity { get; set; }
+
     //np
     public Beverage Beverage { get; set; }
     public Order Order { get; set; }

@@ -12,7 +12,7 @@ using Web_Assignment.Models;
 namespace Web_Assignment.Migrations
 {
     [DbContext(typeof(DB))]
-    [Migration("20250501141738_createdb")]
+    [Migration("20250506144935_createdb")]
     partial class createdb
     {
         /// <inheritdoc />
@@ -136,6 +136,9 @@ namespace Web_Assignment.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.Property<string>("Size")
